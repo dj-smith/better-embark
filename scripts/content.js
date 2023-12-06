@@ -291,7 +291,7 @@ function summarizeSize() {
     infoDiv = document.createElement("div");
     infoDiv.textContent = "These genes are responsible for about 80% of size variation in dogs, but aren't completely predictive. Take them with a grain of salt.";
     infoDiv.style.paddingBottom = "10px";
-    bodySize.insertAdjacentElement("afterbegin", infoDiv);
+    bodySizeDiv.insertAdjacentElement("afterbegin", infoDiv);
 }
 
 function summarizePerformance(altitude, appetite) {

@@ -1,5 +1,16 @@
 // Utilities to scrape gene information out of an Embark page and add messages explaining the resuts.
 
+let profileType = "STANDARD"; // regular Embark by default.
+
+// Standard profiles have 6 trait sections.
+const traitsDivs = document.querySelectorAll('.traits-section');
+const baseColorDiv = traitsDivs[0].querySelector(".traits-module-item");
+const coatColorModsDiv = traitsDivs[1].querySelector(".traits-module-item");
+const otherCoatTraitsDiv = traitsDivs[2].querySelector(".traits-module-item");
+const bodyFeaturesDiv = traitsDivs[3].querySelector(".traits-module-item");
+const bodySizeDiv = traitsDivs[4].querySelector(".traits-module-item");
+const performanceDiv = traitsDivs[5].querySelector(".traits-module-item");
+
 function extractResult(geneName) {
     const traitDiv = document.querySelector("#trait-description-" + geneName);
     const genotype = traitDiv.querySelector(".space-below").querySelectorAll('strong')[1].textContent.trim();
@@ -52,10 +63,9 @@ function processSLocus(sLocus) {
     return sLocusText + " Regardless of this piebald result, a dog may have white from other factors, such as residual white, untestable white spotting, merle, very pale pigmentation, or whitehead.";
 }
 
-function summarizeBaseColor(baseColor) {
-    const traitsDivs = document.querySelectorAll(".traits-section");
-    const baseColorDiv = traitsDivs[0].querySelector(".traits-module-item");
+let infoDiv, ul, item;
 
+function summarizeBaseColor(baseColor) {
     // Traits in the base color section.
     const eLocus = baseColor['eLocus'];
     const cocoa = baseColor['cocoa'];
@@ -63,27 +73,23 @@ function summarizeBaseColor(baseColor) {
     const bLocus = baseColor['bLocus'];
     const dLocus = baseColor['dLocus'];
 
-    const infoDiv = document.createElement("div");
+    infoDiv = document.createElement("div");
     infoDiv.textContent = `[Quick Genotype: ${eLocus} ${bLocus} ${dLocus} ${cocoa} with ${intensity}]`;
-    const ul = infoDiv.appendChild(document.createElement("ul"));
-    let item = ul.appendChild(document.createElement("li"));
+    baseColorDiv.insertAdjacentElement("afterbegin", infoDiv);
+    ul = infoDiv.appendChild(document.createElement("ul"));
+    infoDiv.insertAdjacentElement("beforeend", ul);
+    item = ul.appendChild(document.createElement("li"));
     if (isRecessiveRed(eLocus)) {
         item.textContent = `Recessive red and can't produce eumelanin in hairs, including eyelashes and whiskers. `;
     } else {
         item.textContent = `Physically able to produce eumelanin (black, blue, brown, or lilac) pigment in hair. `;
     }
-    const eu = eumelaninColor(bLocus, dLocus);
+    let eu = eumelaninColor(bLocus, dLocus);
     ul.appendChild(document.createElement("li")).textContent = `Eumelanin color is ${eu}. Any eumelanin (including eye rims, nose, and lips) will be ${eu}`;
-    // ul.appendChild(document.createElement("li")).textContent = `Phaeomelanin (yellow, tan, red) pigment intensity is ${intensity} `;
     ul.appendChild(document.createElement("li")).textContent = `Cocoa is only relevant to French Bulldogs and their mixes.`;
-
-    infoDiv.insertAdjacentElement("beforeend", ul);
-    baseColorDiv.insertAdjacentElement("afterbegin", infoDiv);
 }
 
 function summarizeCoatColorMods(coatColorMods) {
-    const coatColorModsDiv = document.querySelectorAll(".traits-section")[1].querySelector(".traits-module-item");
-
     // Coat color modifiers. Skipping masking because we don't need it.
     const kLocus = coatColorMods['kLocus'];
     const aLocus = coatColorMods['aLocus'];
@@ -93,14 +99,11 @@ function summarizeCoatColorMods(coatColorMods) {
     const merle = coatColorMods['merle'];
     const harlequin = coatColorMods['harlequin'];
 
-    const infoDiv = document.createElement("div");
+    infoDiv = document.createElement("div");
     infoDiv.textContent = `[Quick Genotype: ${kLocus} ${aLocus} ${raly} ${sLocus} ${rLocus} ${merle} ${harlequin}]`;
-    const ul = infoDiv.appendChild(document.createElement("ul"));
+    ul = infoDiv.appendChild(document.createElement("ul"));
     infoDiv.insertAdjacentElement("beforeend", ul);
     coatColorModsDiv.insertAdjacentElement("afterbegin", infoDiv);
-    // let item = ul.appendChild(document.createElement("li"));
-
-    let item;
     switch (kLocus) {
         case "KBKB":
             item = "Dominant solid. Full eumelanin coat. Other genes (such as merle, piebald, seal, or domino) may affect whether the appearance is actually solid or not.";
@@ -175,8 +178,6 @@ function summarizeCoatColorMods(coatColorMods) {
 }
 
 function summarizeOtherCoatTraits(otherCoatTraits) {
-    const otherCoatTraitsDiv = document.querySelectorAll(".traits-section")[2].querySelector(".traits-module-item");
-
     const furnishings = otherCoatTraits['furnishings'];
     const longhair = otherCoatTraits['longhair'];
     const shedding = otherCoatTraits['shedding'];
@@ -185,12 +186,11 @@ function summarizeOtherCoatTraits(otherCoatTraits) {
     const sgk3 = otherCoatTraits['aht'];
     const albino = otherCoatTraits['albino'];
 
-    const infoDiv = document.createElement("div");
+    infoDiv = document.createElement("div");
     infoDiv.textContent = `[Quick Genotype: ${furnishings} ${longhair} ${shedding} ${curl} ${foxi3} ${sgk3} ${albino}]`;
-    const ul = infoDiv.appendChild(document.createElement("ul"));
+    ul = infoDiv.appendChild(document.createElement("ul"));
     infoDiv.insertAdjacentElement("beforeend", ul);
     otherCoatTraitsDiv.insertAdjacentElement("afterbegin", infoDiv);
-    let item;
 
     let coatCurl;
     switch (curl) {
@@ -244,20 +244,17 @@ function summarizeOtherCoatTraits(otherCoatTraits) {
 }
 
 function summarizeBodyFeatures(bodyFeatures) {
-    const bodyFeaturesDiv = document.querySelectorAll(".traits-section")[3].querySelector(".traits-module-item");
-
     const shortMuzzle = bodyFeatures['shortMuzzle'];
     const bobtail = bodyFeatures['bobtail'];
     const hindDewclaws = bodyFeatures['hindDewclaws'];
     const muscling = bodyFeatures['muscling'];
     const blueEyes = bodyFeatures['blueEyes'];
 
-    const infoDiv = document.createElement("div");
+    infoDiv = document.createElement("div");
     infoDiv.textContent = `[Quick Genotype: ${shortMuzzle} ${bobtail} ${hindDewclaws} ${muscling} ${blueEyes}]`;
-    const ul = infoDiv.appendChild(document.createElement("ul"));
+    ul = infoDiv.appendChild(document.createElement("ul"));
     infoDiv.insertAdjacentElement("beforeend", ul);
     bodyFeaturesDiv.insertAdjacentElement("afterbegin", infoDiv);
-    let item;
 
     if (shortMuzzle === "AA") {
         item = "Short snout detected. Dog should have a shorter nose and flatter face than normal.";
@@ -291,20 +288,16 @@ function summarizeBodyFeatures(bodyFeatures) {
 }
 
 function summarizeSize() {
-    const bodySize = document.querySelectorAll(".traits-section")[4].querySelector(".traits-module-item");
-
-    const infoDiv = document.createElement("div");
+    infoDiv = document.createElement("div");
     infoDiv.textContent = "These genes are responsible for about 80% of size variation in dogs, but aren't completely predictive. Take them with a grain of salt.";
     infoDiv.style.paddingBottom = "10px";
     bodySize.insertAdjacentElement("afterbegin", infoDiv);
 }
 
 function summarizePerformance(altitude, appetite) {
-    const performanceDiv = document.querySelectorAll(".traits-section")[5].querySelector(".traits-module-item");
-
-    const infoDiv = document.createElement("div");
+    infoDiv = document.createElement("div");
     infoDiv.textContent = "This section isn't relevant to most dogs. Altitude Adaptation is only found in a handful of rare breeds. POMC is mainly found in Labradors and their mixes.";
-    const ul = infoDiv.appendChild(document.createElement("ul"));
+    ul = infoDiv.appendChild(document.createElement("ul"));
     infoDiv.insertAdjacentElement("beforeend", ul);
     performanceDiv.insertAdjacentElement("afterbegin", infoDiv);
 

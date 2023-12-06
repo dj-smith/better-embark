@@ -158,7 +158,6 @@ function summarizeCoatColorMods(coatColorMods) {
     ul.appendChild(document.createElement("li")).textContent = item;
 
     if (harlequin !== "hh") {
-        console.log(harlequin);
         item = "Harlequin detected. This gene only exists in Great Danes and their mixes, regardless of whether Dane was detected by Embark. It can only express in merle dogs.";
         if (isMerle) {
             let harlequinBase = "mantle";

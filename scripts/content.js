@@ -158,7 +158,6 @@ function summarizeCoatColorMods(coatColorMods) {
     ul.appendChild(document.createElement("li")).textContent = item;
 
     if (harlequin !== "hh") {
-        console.log(harlequin);
         item = "Harlequin detected. This gene only exists in Great Danes and their mixes, regardless of whether Dane was detected by Embark. It can only express in merle dogs.";
         if (isMerle) {
             let harlequinBase = "mantle";
@@ -263,7 +262,8 @@ function summarizeBodyFeatures(bodyFeatures) {
     if (shortMuzzle === "AA") {
         item = "Short snout detected. Dog should have a shorter nose and flatter face than normal.";
     } else {
-        item = "Short snout not detected. Dog most likely will have a normal/medium snout, but may have a long one.";
+        item = "Short snout not detected. Dog most likely will have a normal/medium snout, but may have a long one. " +
+            "Not all forms of short snout are testable.";
     }
     ul.appendChild(document.createElement("li")).textContent = item;
 

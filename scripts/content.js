@@ -262,7 +262,8 @@ function summarizeBodyFeatures(bodyFeatures) {
     if (shortMuzzle === "AA") {
         item = "Short snout detected. Dog should have a shorter nose and flatter face than normal.";
     } else {
-        item = "Short snout not detected. Dog most likely will have a normal/medium snout, but may have a long one.";
+        item = "Short snout not detected. Dog most likely will have a normal/medium snout, but may have a long one. " +
+            "Not all forms of short snout are testable.";
     }
     ul.appendChild(document.createElement("li")).textContent = item;
 

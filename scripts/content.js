@@ -1,20 +1,40 @@
 // Utilities to scrape gene information out of an Embark page and add messages explaining the resuts.
 
 let profileType = "STANDARD"; // regular Embark by default.
+const BREEDER_TRAIT_REGEX = /\([A-z|\s]+\)\n/g;
 
-// Standard profiles have 6 trait sections.
+// Standard profiles have 6 trait sections, Embark for Breeders profiles have 5.
 const traitsDivs = document.querySelectorAll('.traits-section');
-const baseColorDiv = traitsDivs[0].querySelector(".traits-module-item");
-const coatColorModsDiv = traitsDivs[1].querySelector(".traits-module-item");
-const otherCoatTraitsDiv = traitsDivs[2].querySelector(".traits-module-item");
-const bodyFeaturesDiv = traitsDivs[3].querySelector(".traits-module-item");
-const bodySizeDiv = traitsDivs[4].querySelector(".traits-module-item");
-const performanceDiv = traitsDivs[5].querySelector(".traits-module-item");
+let traitsDivIndexOffset = 0
+if (traitsDivs.length === 5) {
+    profileType = "BREEDERS";
+    // The Coat Color Mods section is lumped in with base color for Breeders profiles,
+    // so we'll need to adjust the rest of the divs down one in the list as well.
+    traitsDivIndexOffset = -1;
+}
+const baseColorDiv = traitsDivs[0].querySelector(".traits-module-item");; // Same for all profile types
+const coatColorModsDiv = traitsDivs[1 + traitsDivIndexOffset].querySelector(".traits-module-item");;
+const otherCoatTraitsDiv = traitsDivs[2 + traitsDivIndexOffset].querySelector(".traits-module-item");;
+const bodyFeaturesDiv = traitsDivs[3 + traitsDivIndexOffset].querySelector(".traits-module-item");;
+const bodySizeDiv = traitsDivs[4 + traitsDivIndexOffset].querySelector(".traits-module-item");;
+const performanceDiv = traitsDivs[5 + traitsDivIndexOffset].querySelector(".traits-module-item");;
 
 function extractResult(geneName) {
-    const traitDiv = document.querySelector("#trait-description-" + geneName);
-    const genotype = traitDiv.querySelector(".space-below").querySelectorAll('strong')[1].textContent.trim();
-    return genotype;
+    let selector = "trait-description-" + geneName;
+    let traitDiv = document.querySelector(`[id^="trait-description-${geneName}"]`);
+    if (traitDiv !== null) {
+        switch (profileType) {
+            case "STANDARD":
+                return traitDiv.querySelector(".space-below").querySelectorAll('strong')[1].textContent.trim();
+            case "BREEDERS":
+                let result = traitDiv.parentElement.querySelector('.trait-result').textContent.match(BREEDER_TRAIT_REGEX)[0];
+                return result.substring(1, result.length - 2);
+            case "SELF":
+                break;
+            default: break;
+        }
+    }
+    return `NoCall(${geneName})`;
 }
 
 function isRecessiveRed(eLocus) {
@@ -314,7 +334,7 @@ function summarizePerformance(altitude, appetite) {
 }
 
 const baseColor = {
-    'eLocus': extractResult("MC1R_black_red"),
+    'eLocus': extractResult("MC1R"),
     'cocoa': extractResult("HPS3_Cocoa"),
     'intensity': extractResult("Intensity_red_pigment"),
     'bLocus': extractResult("TYRP1"),

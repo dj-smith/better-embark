@@ -146,14 +146,13 @@ function summarizeCoatColorMods(coatColorMods) {
     }
     ul.appendChild(document.createElement("li")).textContent = item;
 
-
     item = "RALY (saddle tan) test is outdated/unreliable and should usually be ignored.";
     ul.appendChild(document.createElement("li")).textContent = item;
 
     item = processSLocus(sLocus);
     ul.appendChild(document.createElement("li")).textContent = item;
 
-    if (rLocus !== "rr") {
+    if (rLocus === "RR" || rLocus === "Rr") {
         item = "Roan detected. If there are large white areas in the coat, they should have ticking, roaning, or Dalmatian spots.";
         ul.appendChild(document.createElement("li")).textContent = item;
     }

@@ -53,17 +53,25 @@ function processALocus(aLocus, maybeBrindle) {
         return "Recessive solid, without any phaeomelanin (yellow/tan) areas.";
     } else {
         const alleleA = aLocus.substring(0, 2);
+        let aLocusText = "";
         switch (alleleA) {
             case "ay":
-                return "Sable: base color will be sandy, tan, fawn, or red, with or without shading or tipping.";
+                aLocusText = (maybeBrindle ? "Brindle (sable brindle)" : "Sable.") +
+                    ". Base color will be sandy, tan, fawn, or red, with " +
+                    (maybeBrindle ? "eumelanin stripes." : "or without shading or tipping.");
+                break;
             case "aw":
-                return "Agouti (wild type). Dog will have a blend of eumelanin and phaeomelanin hairs across their body.";
+                aLocusText = "Agouti" + (maybeBrindle ? "brindle." : ".") +
+                    " Dog will have a blend of eumelanin and phaeomelanin hairs across their body. May have visible banding on individual hairs.";
+                break;
             case "at":
-                return "Tan points" + (maybeBrindle ? "(or brindle points)." : ".");
-            default: break;
+                aLocusText = (maybeBrindle ? "Brindle" : "Tan") + " points.";
+                break;
+            default:
+                return "[ERROR] processing A Locus failed";
         }
+        return aLocusText;
     }
-    return "[ERROR] processing A Locus failed";
 }
 
 function processSLocus(sLocus) {
@@ -129,7 +137,7 @@ function summarizeCoatColorMods(coatColorMods) {
             item = "Dominant solid. Full eumelanin coat. Other genes (such as merle, piebald, seal, or domino) may affect whether the appearance is actually solid or not.";
             break;
         case "KBky":
-            item = "KB/ky: may be dominant solid or may be brindle. Brindle is untestable and 4 genotypes (KB/ky, KB/Kbr, Kbr/Kbr, and Kbr/ky) all test as KB/ky.";
+            item = "KB/ky: may be dominant solid or may be brindle. Brindle is not testable by Embark, and 4 genotypes (KB/ky, KB/Kbr, Kbr/Kbr, and Kbr/ky) all test as KB/ky.";
             break;
         case "kyky":
             item = "Able to have both eumelanin and phaeomelanin in coat. Pattern will be determined by the A-Locus.";
@@ -137,9 +145,15 @@ function summarizeCoatColorMods(coatColorMods) {
         default:
             break;
     }
-
     ul.appendChild(document.createElement("li")).textContent = item;
+
     if (kLocus !== "KBKB") {
+        if (kLocus === "KBky") {
+            item = " This dog is either KB, which means the A Locus pattern is not visible," +
+                " or it is Kbr (brindle), in which case there will be brindling on any phaeomelanin areas of the coat." +
+                " The following A Locus pattern only applies to Kbr dogs.";
+            ul.appendChild(document.createElement("li")).textContent = item;
+        }
         item = "A-Locus: " + processALocus(aLocus, kLocus === "KBky");
     } else {
         item = "A-Locus pattern will have no effect; dog is dominant solid.";
